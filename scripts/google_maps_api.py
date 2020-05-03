@@ -18,7 +18,7 @@ scale = '18'
 location = ["国会議事堂", "วัดพระแก้ว", "New York City", "Государственный Эрмитаж", "مكة المكرمة"]
 
 gmaps = googlemaps.Client(key=googleapikey)
-address = u'国会議事堂'
+address = u'山科駅'
 result = gmaps.geocode(address)
 lat = result[0]['geometry']['location']['lat']
 lng = result[0]['geometry']['location']['lng']
