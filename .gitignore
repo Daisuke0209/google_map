@@ -1,1 +1,3 @@
 venv
+data
+web-app/main/__pycache__

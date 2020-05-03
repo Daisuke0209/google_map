@@ -11,3 +11,7 @@ source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
+For vector_tile_base
+```
+pip install git+https://github.com/mapbox/vector-tile-base.git
+```
