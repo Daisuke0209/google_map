@@ -25,6 +25,8 @@ lng = result[0]['geometry']['location']['lng']
 
 import requests
 
+print(lat)
+print(lng)
 lat = lat  # 緯度
 lon = lng # 経度
 
