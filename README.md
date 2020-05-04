@@ -18,3 +18,7 @@ pip install git+https://github.com/mapbox/vector-tile-base.git
 
 ## coordinate transformation
 <img src="https://latex.codecogs.com/png.latex?\int_{a}^{b}f(x)dx" />
+
+## Reference
+* https://maps.gsi.go.jp/development/tileCoordCheck.html#13/34.9877/135.8135
+* https://maps.gsi.go.jp/development/ichiran.html
