@@ -2,19 +2,10 @@ import vector_tile_base
 import matplotlib.pyplot as plt
 import numpy as np
 import json
-from utils import tile2pole, pole2tile
+from utils import tile2pole, pole2tile, pole2ratio, _download
 import requests
 import pandas as pd
 import cv2
-import urllib.request
-
-def _download(tile_lon, tile_lat, zoom):
-    url = f'https://cyberjapandata.gsi.go.jp/xyz/experimental_bvmap/{zoom}/{tile_lon}/{tile_lat}.pbf'
-    title = '../data/test.pbf'
-    urllib.request.urlretrieve(url,"{0}".format(title))
-    url = f'https://cyberjapandata.gsi.go.jp/xyz/std/{zoom}/{tile_lon}/{tile_lat}.png'
-    title = '../data/img.png'
-    urllib.request.urlretrieve(url,"{0}".format(title))
 
 def _distance(coords, extent):
     N = len(coords)
@@ -129,21 +120,22 @@ def _matrix(dic):
     coord_matrix = []
     # To do: fix 
     for key in dic.keys():
-        coord_matrix.append(dic[key]['coord'])
+        coord_matrix.append([dic[key]['coord'][1], dic[key]['coord'][0]])
         vec = np.zeros(L)
         for i, neighbor in enumerate(dic[key]['neighbors']):
             if dic[key]['neighbor_altitude'][i]<0:
-                vec[int(neighbor)] = dic[key]['distances'][i]/100
+                vec[int(neighbor)] = dic[key]['distances'][i]*1
             else:
-                vec[int(neighbor)] = dic[key]['distances'][i]
+                vec[int(neighbor)] = dic[key]['distances'][i]*100
         link_matrix.append(vec)
 
     link_matrix = np.array(link_matrix)
     coord_matrix = np.array(coord_matrix)
     return link_matrix, coord_matrix
 
-def _add_altitude(dic):
+def _modify_dic(dic, tile_coord):
     for key in dic.keys():
+        # add neighbor altitude
         neighbors = dic[key]['neighbors']
         alti = dic[key]['altitude']
         diff_altis = []
@@ -151,6 +143,9 @@ def _add_altitude(dic):
             diff_altis.append((dic[int(neighbor)]['altitude'])-alti)
         dic[key]['neighbor_altitude'] = diff_altis
 
+        # add ratio coord
+        ratio_lon, ratio_lat = pole2ratio(dic[key]["coord"][0], dic[key]["coord"][1], tile_coord)
+        dic[key]['ratio_coord'] = [ratio_lon, ratio_lat]
     return dic
 
 
@@ -176,7 +171,7 @@ if __name__ == '__main__':
     # _show_plots(layer_map, nabewari_tile)
     
     dic = _dic(nodes, s_edges, e_edges, distances, alti_tile, tile_coord)
-    dic = _add_altitude(dic)
+    dic = _modify_dic(dic, tile_coord)
     with open('../data/nodes.json', 'w') as f:
         json.dump(dic, f, indent=4)
 
