@@ -10,7 +10,9 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import ArrowStyle
 from read_vectortile import _download
 import cv2
-from utils import _get_latlon_byname, _nearest_node, _weight
+from utils import _get_latlon_byname, _nearest_node, _weight, _nearest_node_db
+from database import _distances
+from tqdm import tqdm
 
 def get_path(start, goal, pred):
     return get_path_row(start, goal, pred[start])
@@ -39,6 +41,24 @@ def shortest_route(s_pos, e_pos, csr_link_matrix, dic):
 
     return route, weight
 
+def shortest_route_db(s_pos, e_pos, csr_link_matrix, cur, table_name):
+    s_lat, s_lon = _get_latlon_byname(s_pos)
+    start = _nearest_node_db(cur, table_name, s_lat, s_lon)
+
+    e_lat, e_lon = _get_latlon_byname(e_pos)
+    end = _nearest_node_db(cur, table_name, e_lat, e_lon)
+
+    print(f"start: {start}")
+    print(f"end: {end}")
+
+    d, p = shortest_path(csr_link_matrix, return_predecessors=True, indices=start)
+
+    route = get_path_row(start, end, p)
+    
+    weight = _weight(route, csr_link_matrix)
+
+    return route, weight
+
 def make_adjacency_matrix(nodes_list, csr_link_matrix, dic):
     N = len(nodes_list)
 
@@ -52,7 +72,27 @@ def make_adjacency_matrix(nodes_list, csr_link_matrix, dic):
     
     return adj_matrix
 
-#----------------------------------
+def _linkmatrix(cur, table_name):
+    cur.execute(f"SELECT * FROM {table_name}")
+    nodes = cur.fetchall()
+    L = len(nodes)
+    link_matrix = []
+    coord_matrix = []
+    for node in tqdm(nodes):
+        vec = np.zeros(L)
+        node_id = node[0]
+        coord_matrix.append([node[7], node[6]])
+        table_name_sub = table_name + '_' + str(node_id)
+        cur.execute(f"SELECT * FROM {table_name_sub}")
+        neighbors = cur.fetchall()
+        for neighbor in neighbors:
+            neighbor_id = neighbor[1]
+            dis = _distances(cur, table_name, node_id, neighbor_id)
+            vec[neighbor_id] = dis
+        link_matrix.append(vec)
+
+    return np.array(link_matrix), np.array(coord_matrix)
+
 if __name__ == '__main__':
     c = [[0, 4],
         [2, 4],
