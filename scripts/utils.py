@@ -220,4 +220,4 @@ class Plot_route_db():
             
         plt.scatter(lons, lats, s = 2)
         plt.plot(lons, lats, color='red')
-        plt.show()
+        plt.savefig('../data/route_img.png')

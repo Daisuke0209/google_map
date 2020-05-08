@@ -29,7 +29,6 @@ if __name__ == '__main__':
 
     
     plotter = Plot_route_db(config)
-    # plotter.draw_plots(cur, table_name)
     plotter.draw_route(cur, table_name, route)
 
     # adj_matrix = make_adjacency_matrix(['金閣寺', '清水寺', '伏見稲荷'], csr_link_matrix, dic)
