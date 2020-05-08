@@ -72,6 +72,23 @@ def make_adjacency_matrix(nodes_list, csr_link_matrix, dic):
     
     return adj_matrix
 
+def make_adjacency_matrix_db(nodes_list, csr_link_matrix, cur, table_name):
+    N = len(nodes_list)
+
+    adj_matrix = np.zeros((N, N))
+    route_matrix = []
+
+    for i in range(N):
+        route_vector = []
+        for j in range(N):
+            if i == j: continue
+            route, cost = shortest_route_db(nodes_list[i], nodes_list[j], csr_link_matrix, cur, table_name)
+            adj_matrix[i, j] = cost
+            route_vector.append(route)
+        route_matrix.append(route_vector)
+
+    return adj_matrix, route_matrix
+
 def _linkmatrix(cur, table_name):
     cur.execute(f"SELECT * FROM {table_name}")
     nodes = cur.fetchall()
