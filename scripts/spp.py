@@ -11,7 +11,7 @@ from matplotlib.patches import ArrowStyle
 from read_vectortile import _download
 import cv2
 from utils import _get_latlon_byname, _nearest_node, _weight, _nearest_node_db
-from database import _distances
+from database import _distances, _height
 from tqdm import tqdm
 
 def get_path(start, goal, pred):
@@ -88,7 +88,11 @@ def _linkmatrix(cur, table_name):
         for neighbor in neighbors:
             neighbor_id = neighbor[1]
             dis = _distances(cur, table_name, node_id, neighbor_id)
-            vec[neighbor_id] = dis
+            alti = _height(cur, table_name, node_id, neighbor_id)
+            if alti < 0:
+                vec[neighbor_id] = dis*10
+            else:
+                vec[neighbor_id] = dis/10
         link_matrix.append(vec)
 
     return np.array(link_matrix), np.array(coord_matrix)
