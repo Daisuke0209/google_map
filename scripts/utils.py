@@ -66,7 +66,6 @@ def _nearest_node_db(cur, table_name, lat, lon):
         if min_l > l:
             min_l = l
             min_id = node[0]
-            print(min_l)
         
     return int(min_id)
 
@@ -181,33 +180,9 @@ class Plot_route_db():
         ylim = ax.get_ylim()
         ax.imshow(self.img, extent=[*xlim, *ylim], alpha=0.6)
         # plt.show()
-        
-
-    def draw_lines(self, cur, table_name):
-        cur.execute(f"SELECT * FROM {table_name}") 
-        nodes = cur.fetchall()
-        h, w, c = self.img.shape
-        self.draw_plots(cur, table_name)
-        for node in tqdm(nodes):
-            lat = node[6]
-            lon = node[7]
-            node_id = node[0]
-            table_name_sub = table_name + '_' + str(node_id)
-            cur.execute(f"SELECT * FROM {table_name_sub}")
-            neighbors = cur.fetchall()
-            for neighbor in neighbors:
-                neighbor_id = neighbor[1]
-                cur.execute(f"SELECT * FROM {table_name} where id = {neighbor_id}") 
-                neighbor_data = cur.fetchone()
-                n_lat = neighbor_data[6]
-                n_lon = neighbor_data[7]
-                plt.annotate('', xy = (lat, lon), size = 1, xytext = (n_lat, n_lon)
-                , arrowprops=dict(arrowstyle=ArrowStyle('<|-', head_length=1, head_width=0.5)))
-
-        plt.savefig('../data/line_plots.png')
 
     def draw_route(self, cur, table_name, route):
-        self.draw_plots(cur, table_name)
+        # self.draw_plots(cur, table_name)
 
         lats = []
         lons = []
@@ -217,7 +192,18 @@ class Plot_route_db():
             node_data = cur.fetchone()
             lons.append(node_data[7])
             lats.append(node_data[6])
+            if len(lats) > 1:
+                plt.annotate('', xy=(lons[-1],lats[-1]), xytext=(lons[-2], lats[-2]),
+                                arrowprops=dict(arrowstyle=ArrowStyle('<|-', head_length=0.3, head_width=0.15)))
+
             
         plt.scatter(lons, lats, s = 2)
         plt.plot(lons, lats, color='red')
-        plt.savefig('../data/route_img.png')
+        # plt.savefig('../data/route_img.png')
+    
+    def draw_routes(self, cur, table_name, routes):
+        self.draw_plots(cur, table_name)
+        print(len(routes))
+        for route in routes:
+            self.draw_route(cur, table_name, route)
+        plt.savefig('../data/routes_img.png')
