@@ -104,8 +104,8 @@ def _linkmatrix(cur, table_name):
         neighbors = cur.fetchall()
         for neighbor in neighbors:
             neighbor_id = neighbor[1]
-            dis = _distances(cur, table_name, node_id, neighbor_id)
-            alti = _height(cur, table_name, node_id, neighbor_id)
+            dis = neighbor[2]
+            alti = neighbor[3]
             if alti < 0:
                 vec[neighbor_id] = dis*10
             else:

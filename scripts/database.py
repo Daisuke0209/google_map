@@ -4,6 +4,7 @@ import json
 from utils import tile2pole, pole2tile, pole2ratio, _download
 from read_vectortile import _get_altitude, fetch_tile
 import numpy as np
+from tqdm import tqdm
 
 def make_tbl(cur, table_name):
     cur.execute(f"drop table {table_name};")
@@ -47,9 +48,9 @@ def make_tbl(cur, table_name):
             if l > 0 and l < L-1:
                 table_name_sub = table_name + '_' + str(n)
                 cur.execute(f"drop table {table_name_sub};")
-                cur.execute(f'''CREATE TABLE IF NOT EXISTS {table_name_sub}(id integer, neighbors integer)''')
-                cur.execute(f"INSERT INTO {table_name_sub} VALUES ({n}, {n-1})")
-                cur.execute(f"INSERT INTO {table_name_sub} VALUES ({n}, {n+1})")
+                cur.execute(f'''CREATE TABLE IF NOT EXISTS {table_name_sub}(id integer, neighbors integer, distance integer, height integer)''')
+                cur.execute(f"INSERT INTO {table_name_sub} VALUES ({n}, {n-1}, {0}, {0})")
+                cur.execute(f"INSERT INTO {table_name_sub} VALUES ({n}, {n+1}, {0}, {0})")
                 cur.execute(f"INSERT INTO {table_name} VALUES ({n}, {i}, {tile_lat}, {tile_lon}, {ratio_lat}, {ratio_lon}, {lat}, {lon}, {alti}, {0}, {t_lat}, {t_lon})")
             elif l == 0:
                 cur.execute(f"INSERT INTO {table_name} VALUES ({n}, {i}, {tile_lat}, {tile_lon}, {ratio_lat}, {ratio_lon}, {lat}, {lon}, {alti}, {1}, {t_lat}, {t_lon})")
@@ -69,15 +70,30 @@ def add_neighbor_tbl(cur, table_name):
         nodes = cur.fetchall()
         table_name_sub = table_name + '_' + str(n)
         cur.execute(f"drop table {table_name_sub};")
-        cur.execute(f'''CREATE TABLE IF NOT EXISTS {table_name_sub}(id integer, neighbors integer)''')
+        cur.execute(f'''CREATE TABLE IF NOT EXISTS {table_name_sub}(id integer, neighbors integer, distance integer, height integer)''')
         for node in nodes:
             line_id = node[1]
             edge = node[9]
             node_id = node[0]
             if edge == 1:
-                cur.execute(f"INSERT INTO {table_name_sub} VALUES ({n}, {node_id+1})")
+                cur.execute(f"INSERT INTO {table_name_sub} VALUES ({n}, {node_id+1}, {0}, {0})")
             else:
-                cur.execute(f"INSERT INTO {table_name_sub} VALUES ({n}, {node_id-1})")
+                cur.execute(f"INSERT INTO {table_name_sub} VALUES ({n}, {node_id-1}, {0}, {0})")
+
+def add_height_distance(cur, table_name):
+    cur.execute(f"SELECT * FROM {table_name}")
+    nodes = cur.fetchall()
+    for node in tqdm(nodes):
+        node_id = node[0]
+        table_name_sub = table_name + '_' + str(node_id)
+        cur.execute(f"SELECT * FROM {table_name_sub}")
+        neighbors = cur.fetchall()
+        for neighbor in neighbors:
+            neighbor_id = neighbor[1]
+            dis = _distances(cur, table_name, node_id, neighbor_id)
+            alti = _height(cur, table_name, node_id, neighbor_id)
+            cur.execute(f"update {table_name_sub} set distance = {dis} where neighbors = {neighbor_id}")
+            cur.execute(f"update {table_name_sub} set height = {alti} where neighbors = {neighbor_id}")
 
 def show_tbl(cur, table_name):
     for row in cur.execute(f'SELECT * FROM {table_name}'):
@@ -124,10 +140,15 @@ if __name__ == '__main__':
     _download(tile_lon = tile_coord[1], tile_lat = tile_coord[2], zoom = tile_coord[0])
 
     # make table
+    print("make table")
     table_name = f'table_{tile_coord[0]}_{tile_coord[1]}_{tile_coord[2]}'
     make_tbl(cur, table_name)
     # add neighbor relations
+    print("add neighbor relations")
     add_neighbor_tbl(cur, table_name)
+    # add neighbor distance and height
+    print("add neighbor height and distance")
+    add_height_distance(cur, table_name)
     conn.commit()
     conn.close()
 
