@@ -8,10 +8,10 @@ from scipy.sparse.csgraph import shortest_path, floyd_warshall, dijkstra, bellma
 from scipy.sparse import csr_matrix
 import matplotlib.pyplot as plt
 from matplotlib.patches import ArrowStyle
-from read_vectortile import _download
 import cv2
-from utils import _get_latlon_byname, _nearest_node, _weight, _nearest_node_db
-from database import _distances, _height
+from .read_vectortile import _download
+from .utils import _get_latlon_byname, _nearest_node, _weight, _nearest_node_db
+from .database import _distances, _height
 from tqdm import tqdm
 
 def get_path(start, goal, pred):

@@ -2,7 +2,7 @@ import vector_tile_base
 import matplotlib.pyplot as plt
 import numpy as np
 import json
-from utils import tile2pole, pole2tile, pole2ratio, _download
+from .utils import tile2pole, pole2tile, pole2ratio, _download
 import requests
 import pandas as pd
 import cv2

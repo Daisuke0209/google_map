@@ -1,8 +1,8 @@
 import sqlite3
 import vector_tile_base
 import json
-from utils import tile2pole, pole2tile, pole2ratio, _download
-from read_vectortile import _get_altitude, fetch_tile
+from .utils import tile2pole, pole2tile, pole2ratio, _download
+from .read_vectortile import _get_altitude, fetch_tile
 import numpy as np
 from tqdm import tqdm
 
