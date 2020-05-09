@@ -8,6 +8,7 @@ from pygeocoder import Geocoder
 import googlemaps
 from tqdm import tqdm
 import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 from matplotlib.patches import ArrowStyle
 from PIL import Image
 
@@ -169,7 +170,8 @@ class Plot_route_db():
         w, h = self.img.size
         lats = []
         lons = []
-        fig = plt.figure(figsize=(8, 6))
+        # fig = plt.figure(figsize=(8, 6))
+        fig = Figure()
         ax = fig.add_subplot(1, 1, 1)
 
         for i, node in enumerate(nodes):
@@ -180,9 +182,10 @@ class Plot_route_db():
         ylim = ax.get_ylim()
         ax.imshow(self.img, extent=[*xlim, *ylim], alpha=0.6)
         # plt.show()
+        return fig, ax
 
     def draw_route(self, cur, table_name, route):
-        # self.draw_plots(cur, table_name)
+        fig, ax = self.draw_plots(cur, table_name)
 
         lats = []
         lons = []
@@ -193,13 +196,13 @@ class Plot_route_db():
             lons.append(node_data[7])
             lats.append(node_data[6])
             if len(lats) > 1:
-                plt.annotate('', xy=(lons[-1],lats[-1]), xytext=(lons[-2], lats[-2]),
+                ax.annotate('', xy=(lons[-1],lats[-1]), xytext=(lons[-2], lats[-2]),
                                 arrowprops=dict(arrowstyle=ArrowStyle('<|-', head_length=0.3, head_width=0.15)))
 
             
-        plt.scatter(lons, lats, s = 2)
-        plt.plot(lons, lats, color='red')
-        # plt.savefig('../data/route_img.png')
+        ax.scatter(lons, lats, s = 2)
+        ax.plot(lons, lats, color='red')
+        return fig
     
     def draw_routes(self, cur, table_name, routes):
         self.draw_plots(cur, table_name)
