@@ -1,10 +1,12 @@
 # map analysis
 ![aaa](routes_img.png)
 
-## pyenv
+## Environment 
+
+### pyenv
 Python 3.7.4
 
-## venv
+### venv
 
 ```
 python -m venv venv
@@ -15,6 +17,11 @@ pip install -r requirements.txt
 For vector_tile_base
 ```
 pip install git+https://github.com/mapbox/vector-tile-base.git
+```
+
+## Test
+```
+python -m unittest discover test
 ```
 
 ## データベース
