@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.patches import ArrowStyle
 from PIL import Image
+import os
 
 def sec(x):
     return 1/np.cos(x)
@@ -36,10 +37,10 @@ def pole2ratio(lon, lat, tile_coord):
 
 def _download(tile_lon, tile_lat, zoom):
     url = f'https://cyberjapandata.gsi.go.jp/xyz/experimental_bvmap/{zoom}/{tile_lon}/{tile_lat}.pbf'
-    title = '../data/test.pbf'
+    title = os.path.dirname(__file__)+'/../data/test.pbf'
     urllib.request.urlretrieve(url,"{0}".format(title))
     url = f'https://cyberjapandata.gsi.go.jp/xyz/std/{zoom}/{tile_lon}/{tile_lat}.png'
-    title = '../data/img.png'
+    title = os.path.dirname(__file__)+'/../data/img.png'
     urllib.request.urlretrieve(url,"{0}".format(title))
 
 def _nearest_node(dic, lat, lon):
@@ -156,8 +157,8 @@ class Plot_route_db():
         tile_coord = (config["coord"]["zoom"], config["coord"]["t_lon"], config["coord"]["t_lat"])
 
         _download(tile_lon = tile_coord[1], tile_lat = tile_coord[2], zoom = tile_coord[0])
-
-        self.img = Image.open('../data/img.png')
+        
+        self.img = Image.open(os.path.dirname(__file__)+'/../data/img.png')
         h, w = self.img.size
         # self.img = self.img.resize((int(h*0.5), int(w*0.5))
         ratio = 1/30*2
