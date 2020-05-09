@@ -3,3 +3,4 @@ data
 .DS_Store
 scripts/__pycache__
 web-app/main/__pycache__
+test/__pycache__

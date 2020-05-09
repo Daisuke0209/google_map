@@ -46,7 +46,7 @@ six==1.12.0
 sklearn==0.0
 tqdm==4.46.0
 urllib3==1.25.3
-vector-tile-base==1.0
+git+https://github.com/mapbox/vector-tile-base.git
 virtualenv==16.7.9
 virtualenv-clone==0.5.3
 Werkzeug==0.15.5
