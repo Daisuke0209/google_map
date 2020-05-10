@@ -171,8 +171,8 @@ class Plot_route_db():
         w, h = self.img.size
         lats = []
         lons = []
-        # fig = plt.figure(figsize=(8, 6))
-        fig = Figure()
+        fig = plt.figure(figsize=(8, 6))
+        # fig = Figure()
         ax = fig.add_subplot(1, 1, 1)
 
         for i, node in enumerate(nodes):
@@ -182,7 +182,7 @@ class Plot_route_db():
         xlim = ax.get_xlim()
         ylim = ax.get_ylim()
         ax.imshow(self.img, extent=[*xlim, *ylim], alpha=0.6)
-        # plt.show()
+        plt.savefig('../data/plots_img.png')
         return fig, ax
 
     def draw_route(self, cur, table_name, route):
@@ -203,11 +203,12 @@ class Plot_route_db():
             
         ax.scatter(lons, lats, s = 2)
         ax.plot(lons, lats, color='red')
-        return fig
+        plt.savefig('../data/route_img.png')
+        return fig, ax
     
     def draw_routes(self, cur, table_name, routes):
         self.draw_plots(cur, table_name)
         print(len(routes))
         for route in routes:
             self.draw_route(cur, table_name, route)
-        plt.savefig('../data/routes_img.png')
+        plt.savefig(os.path.dirname(__file__)+'/../data/routes_img.png')
