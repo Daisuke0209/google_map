@@ -1,13 +1,13 @@
 import sqlite3
 import vector_tile_base
 import json
-from .utils import tile2pole, pole2tile, pole2ratio, _download
-from .read_vectortile import _get_altitude, fetch_tile
+from utils import tile2pole, pole2tile, pole2ratio, _download
+from read_vectortile import _get_altitude, fetch_tile
 import numpy as np
 from tqdm import tqdm
 
 def make_tbl(cur, table_name):
-    cur.execute(f"drop table {table_name};")
+    # cur.execute(f"drop table {table_name};")
     cur.execute(f'''CREATE TABLE IF NOT EXISTS {table_name}(
         id integer, 
         line_id integer, 
@@ -47,7 +47,7 @@ def make_tbl(cur, table_name):
             
             if l > 0 and l < L-1:
                 table_name_sub = table_name + '_' + str(n)
-                cur.execute(f"drop table {table_name_sub};")
+                # cur.execute(f"drop table {table_name_sub};")
                 cur.execute(f'''CREATE TABLE IF NOT EXISTS {table_name_sub}(id integer, neighbors integer, distance integer, height integer)''')
                 cur.execute(f"INSERT INTO {table_name_sub} VALUES ({n}, {n-1}, {0}, {0})")
                 cur.execute(f"INSERT INTO {table_name_sub} VALUES ({n}, {n+1}, {0}, {0})")
@@ -65,11 +65,11 @@ def add_neighbor_tbl(cur, table_name):
         n = target[0]
         target_lat = target[2]
         target_lon = target[3]
-        cur.execute(f"SELECT * FROM {table_name} WHERE tile_lat = {target_lat} and tile_lon = {target_lon} and id != {n} and edge IN(-1,1)") 
+        cur.execute(f"SELECT * FROM {table_name} WHERE tile_lat = {target_lat} and tile_lon = {target_lon}  and edge IN(-1,1)") 
         # nodes: targetと同じ物理的位置を持つノード
         nodes = cur.fetchall()
         table_name_sub = table_name + '_' + str(n)
-        cur.execute(f"drop table {table_name_sub};")
+        # cur.execute(f"drop table {table_name_sub};")
         cur.execute(f'''CREATE TABLE IF NOT EXISTS {table_name_sub}(id integer, neighbors integer, distance integer, height integer)''')
         for node in nodes:
             line_id = node[1]
