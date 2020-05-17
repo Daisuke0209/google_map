@@ -28,19 +28,6 @@ def get_path_row(start, goal, pred_row):
     path.append(i)
     return path[::-1]
 
-def shortest_route(s_pos, e_pos, csr_link_matrix, dic):
-    s_lat, s_lon = _get_latlon_byname(s_pos)
-    start = _nearest_node(dic, s_lat, s_lon)
-
-    e_lat, e_lon = _get_latlon_byname(e_pos)
-    end = _nearest_node(dic, e_lat, e_lon)
-
-    d, p = shortest_path(csr_link_matrix, return_predecessors=True, indices=start)
-    route = get_path_row(start, end, p)
-    weight = _weight(route, csr_link_matrix)
-
-    return route, weight
-
 def shortest_route_db(s_pos, e_pos, csr_link_matrix, cur, table_name):
     s_lat, s_lon = _get_latlon_byname(s_pos)
     start = _nearest_node_db(cur, table_name, s_lat, s_lon)
@@ -58,19 +45,6 @@ def shortest_route_db(s_pos, e_pos, csr_link_matrix, cur, table_name):
     weight = _weight(route, csr_link_matrix)
 
     return route, weight
-
-def make_adjacency_matrix(nodes_list, csr_link_matrix, dic):
-    N = len(nodes_list)
-
-    adj_matrix = np.zeros((N, N))
-
-    for i in range(N):
-        for j in range(N):
-            if i == j: continue
-            route, cost = shortest_route(nodes_list[i], nodes_list[j], csr_link_matrix, dic)
-            adj_matrix[i, j] = cost
-    
-    return adj_matrix
 
 def make_adjacency_matrix_db(nodes_list, csr_link_matrix, cur, table_name):
     N = len(nodes_list)
