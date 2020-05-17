@@ -4,7 +4,7 @@ from read_vectortile import _matrix
 from spp import get_path_row
 from utils import Plot_route, _nearest_node, _get_latlon_byname, Plot_route_db
 import json
-from spp import shortest_route, make_adjacency_matrix, _linkmatrix, shortest_route_db, make_adjacency_matrix_db
+from spp import _linkmatrix, shortest_route_db, make_adjacency_matrix_db
 import sqlite3
 import numpy as np
 from tsp import solve_tsp
