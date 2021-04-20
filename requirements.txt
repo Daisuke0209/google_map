@@ -1,5 +1,5 @@
 absl-py==0.8.0
-ansible==2.9.2
+ansible==2.9.20
 awscli==1.16.225
 botocore==1.12.215
 certifi==2019.11.28
