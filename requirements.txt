@@ -2,7 +2,7 @@ absl-py==0.8.0
 ansible==2.9.2
 awscli==1.16.225
 botocore==1.12.215
-certifi==2019.11.28
+certifi==2022.12.7
 cffi==1.13.2
 chardet==3.0.4
 click==7.1.2
